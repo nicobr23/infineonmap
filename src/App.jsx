@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { GoogleMap, LoadScript, Marker, InfoWindow } from "@react-google-maps/api";
+import { APIProvider, Map, Marker } from '@vis.gl/react-google-maps';
 
 const locations = [
   { id: 1, name: "Schloss Neuschwanstein", position: { lat: 47.5575, lng: 10.7498 } },
@@ -7,10 +7,6 @@ const locations = [
   { id: 3, name: "Würzburg Residenz", position: { lat: 49.7913, lng: 9.9534 } },
 ];
 
-const containerStyle = {
-  width: "100%",
-  height: "100vh",
-};
 
 const center = {
   lat: 48.790447,
@@ -34,7 +30,7 @@ function App() {
           <input
             type="text"
             placeholder="Suche nach Sehenswürdigkeiten..."
-            className="p-2 rounded-md"
+            className="p-2 rounded-md text-black"
             value={searchText}
             onChange={handleSearchChange}
           />
@@ -43,8 +39,10 @@ function App() {
 
       {/* Karte */}
       <div className="flex-grow">
-        <LoadScript googleMapsApiKey={import.meta.env.VITE_REACT_APP_GOOGLE_MAPS_API_KEY}>
-          <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={7}>
+        <APIProvider apiKey={import.meta.env.VITE_REACT_APP_GOOGLE_MAPS_API_KEY}>
+          <Map defaultCenter={center} defaultZoom={7}>
+
+
             {locations
               .filter((loc) => loc.name.toLowerCase().includes(searchText.toLowerCase()))
               .map((location) => (
@@ -54,7 +52,23 @@ function App() {
                   onClick={() => setSelectedLocation(location)}
                 />
               ))}
+          </Map>
+        </APIProvider>
 
+
+
+        {/* <LoadScript googleMapsApiKey={import.meta.env.VITE_REACT_APP_GOOGLE_MAPS_API_KEY}>
+          <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={7}>
+            {locations
+              .filter((loc) => loc.name.toLowerCase().includes(searchText.toLowerCase()))
+              .map((location) => (
+                <MarkerF
+                  key={location.id}
+                  position={location.position}
+                  onClick={() => setSelectedLocation(location)}
+                />
+              ))}
+              
             {selectedLocation && (
               <InfoWindow
                 position={selectedLocation.position}
@@ -66,7 +80,7 @@ function App() {
               </InfoWindow>
             )}
           </GoogleMap>
-        </LoadScript>
+        </LoadScript> */}
       </div>
     </div>
   );
