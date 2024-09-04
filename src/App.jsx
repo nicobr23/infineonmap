@@ -79,7 +79,7 @@ function App() {
           </div>
 
           <div className="flex flex-col items-center justify-center w-full">
-            <h1 className="text-center text-base mobile:text-xl xl:text-2xl font-bold text-ocean-80 mb-0 px-2 mobile:mb-2">Map of all favorite places</h1>
+            <h1 className="text-center text-base mobile:text-xl xl:text-2xl font-bold text-ocean-80 mb-0 px-2 mobile:mb-2">Karte aller Lieblingsplätze</h1>
           
             <div className="relative hidden items-center mobile:flex">
               {/* Search Bar */}
@@ -149,7 +149,7 @@ function App() {
                   <div class="flex flex-col justify-center items-center">
                     <img src={Person} alt="Profile photo of the person who suggested this place" className="h-16 mobile:h-32 xl:h-48" /> {/* Infineon Logo */}
                     <p className="text-sm text-gray-700 pb-4">
-                    Suggested by: {highlightText(selectedLocation.user, searchText)}
+                    Empfohlen von: {highlightText(selectedLocation.user, searchText)}
                     </p>
                   </div>
                   <p className="text-base">
