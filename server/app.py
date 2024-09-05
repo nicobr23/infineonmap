@@ -51,35 +51,10 @@ def load_locations_from_excel():
 @app.route('/', methods=['GET'])
 def get_locations():
     locations = load_locations_from_excel()
-    # response = jsonify([
-    #     {
-    #         "id": 1,
-    #         "name": "Schloss Neuschwanstein",
-    #         "position": {"lat": 47.5575, "lng": 10.7498},
-    #         "user": "John Doe",
-    #         "infoText": "A breathtaking castle in the Bavarian Alps, known as the inspiration for Disney's Sleeping Beauty Castle."
-    #     },
-    #     {
-    #         "id": 2,
-    #         "name": "Marienplatz München",
-    #         "position": {"lat": 48.1371, "lng": 11.5754},
-    #         "user": "Jane Smith",
-    #         "infoText": "The heart of Munich's city center, surrounded by historic buildings and famous for its Glockenspiel."
-    #     },
-    #     {
-    #         "id": 3,
-    #         "name": "Würzburg Residenz",
-    #         "position": {"lat": 49.7913, "lng": 9.9534},
-    #         "user": "Max Mustermann",
-    #         "infoText": "One of the most important Baroque palaces in Europe, located in the city of Würzburg."
-    #     }
-    # ])
+    
     response = jsonify(locations)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
-
