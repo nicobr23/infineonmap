@@ -83,7 +83,7 @@ function App() {
       {showModal && <Modal onClose={() => setShowModal(false)} />}
       <div className="flex-grow z-1">
         <APIProvider apiKey={import.meta.env.VITE_REACT_APP_GOOGLE_MAPS_API_KEY}>
-          <Map defaultCenter={{ lat: 48.790447, lng: 11.497889 }} defaultZoom={7} mapId="testID">
+          <Map defaultCenter={{ lat: 49.0134, lng: 12.1016 }} defaultZoom={11} mapId="testID">
             {filteredLocations.map((location, index) => (
               <AdvancedMarker
                 key={location.id}
