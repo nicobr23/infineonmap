@@ -18,29 +18,29 @@ def format_coordinate(number):
 
 
 def load_locations_from_excel():
-    # Read Excel file
-    df = pd.read_excel('locations.xlsx')
+    # Load the Excel file
+    df = pd.read_excel('InfineonMap.xlsx')
+    
+    # Split the 'Geo-Koordinaten' into 'lat' and 'lng'
+    df[['lat', 'lng']] = df['Geo-Koordinaten'].str.split(',', expand=True)
+    
+    # Convert lat and lng to floats and format them
+    # df['lat'] = df['lat'].apply(lambda x: format_coordinate(float(x.strip())))
+    # df['lng'] = df['lng'].apply(lambda x: format_coordinate(float(x.strip())))
 
     # Convert the DataFrame to a list of dictionaries
     locations = df.to_dict(orient='records')
-    df['lat'] = df['lat'].apply(lambda x: format_coordinate(int(x)))
-    df['lng'] = df['lng'].apply(lambda x: format_coordinate(int(x)))
-    
-
-
-    locations = df.to_dict(orient='records')
-
 
     # Structure the data as needed for the frontend
     formatted_locations = [
         {
-            "id": loc['id'],
-            "name": loc['name'],
-            "position": {"lat": loc['lat'], "lng": loc['lng']},
-            "user": loc['user'],
-            "infoText": loc['infoText']
+            "id": index,  # Using the index as the id
+            "name": loc['Bezeichnung des Ortes'],
+            "position": {"lat": float(loc['lat']), "lng": float(loc['lng'])},
+            "user": loc['Created By'],
+            "infoText": loc['kurze Beschreibung / Begründung']
         }
-        for loc in locations
+        for index, loc in enumerate(locations)
     ]
 
     return formatted_locations

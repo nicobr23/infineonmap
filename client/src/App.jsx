@@ -1,22 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
-import { FaSearch } from "react-icons/fa"; // Import FontAwesome search icon
-import axios from 'axios'; // Import Axios for API requests
-import InfineonLogo from '../public/logo.png'; // Import the Infineon logo (you'll need to have the logo locally)
+import { FaSearch } from "react-icons/fa";
+import axios from 'axios';
+import InfineonLogo from '../public/logo.png';
 import Modal from "./components/Modal";
-import Person from '../public/person.png'; // Import Example Picture for a Person
 
-const center = {
-  lat: 48.790447,
-  lng: 11.497889,
-};
+// Import all images dynamically using import.meta.glob
+const images = import.meta.glob('../public/images/*.{png,jpg,jpeg}');
 
 // Utility function to highlight search text
 const highlightText = (text, searchText) => {
-  if (!searchText) return text; // If no search term, return plain text
+  if (!searchText) return text;
 
-  const regex = new RegExp(`(${searchText})`, 'gi'); // Match the search term (case-insensitive)
-  const parts = text.split(regex); // Split the text based on the search term
+  const regex = new RegExp(`(${searchText})`, 'gi');
+  const parts = text.split(regex);
 
   return parts.map((part, index) =>
     regex.test(part) ? <span key={index} className="bg-yellow-300">{part}</span> : part
@@ -27,30 +24,42 @@ function App() {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [searchText, setSearchText] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [locations, setLocations] = useState([]); // State to hold locations from the server
-  const [loading, setLoading] = useState(true); // Loading state
+  const [locations, setLocations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [imagePaths, setImagePaths] = useState({}); // State to hold image URLs
 
-  // Fetch locations from the Flask server
   useEffect(() => {
-    console.log();
-    axios.get('http://127.0.0.1:5000/') // Adjust the URL to match your Flask API endpoint
+    // Fetch locations from the backend
+    axios.get('http://127.0.0.1:5000/')
       .then((response) => {
-        console.log(response.data);
-        setLocations(response.data); // Set the response data to locations
-        setLoading(false); // Set loading to false when data is fetched
+        setLocations(response.data);
+        setLoading(false);
       })
       .catch((error) => {
         console.error('Error fetching locations:', error);
         setLoading(false);
       });
+
+    // Resolve all image paths (asynchronous)
+    const resolveImagePaths = async () => {
+      const paths = {};
+      let counter = 1; // Start the counter at 1 for image names
+
+      for (const path in images) {
+        const module = await images[path](); // Load the image URL dynamically
+        paths[counter] = module.default; // Assign the image URL to the counter
+        counter++; // Increment counter to match the next image
+      }
+      setImagePaths(paths); // Set the resolved image paths
+    };
+
+    resolveImagePaths();
   }, []);
 
-  // Fuzzy search logic
   const handleSearchChange = (e) => {
     setSearchText(e.target.value.toLowerCase());
   };
 
-  // Filter function for fuzzy search on name, user, and infoText
   const filteredLocations = locations.filter((loc) => {
     const lowerSearchText = searchText.toLowerCase();
     return (
@@ -61,61 +70,21 @@ function App() {
   });
 
   if (loading) {
-    return <p>Loading...</p>; // Display a loading message while fetching data
+    return <p>Loading...</p>;
   }
 
   return (
     <div className="flex flex-col h-screen bg-white">
       {/* Header with search bar */}
-      <header >
-        <div className="flex items-center justify-between p-4 bg-white border-b-0 mobile:border-b-2 border-ocean-80">
-          <div className="flex items-center w-1/5">
-            <img src={InfineonLogo} alt="Infineon Logo" className="h-6 mobile:h-12" /> {/* Infineon Logo */}
-          </div>
-
-          <div className="flex flex-col items-center justify-center w-full">
-            <h1 className="text-center text-base mobile:text-xl xl:text-2xl font-bold text-ocean-80 mb-0 px-2 mobile:mb-2">Karte aller Lieblingsplätze</h1>
-
-            <div className="relative hidden items-center mobile:flex">
-              {/* Search Bar */}
-              <FaSearch className="absolute left-3 text-gray-500 bg-ocean-20" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className=" bg-ocean-20 pl-10 pr-4 py-2 rounded-full border border-ocean-80 focus:outline-none focus:ring-2 focus:ring-[#0A8276] text-gray-700 w-auto shadow-sm  "
-                value={searchText}
-                onChange={handleSearchChange}
-              />
-            </div>
-          </div>
-
-          <div className="w-1/5">
-            <p className="text-center"><button onClick={() => setShowModal(true)} className='px-2 py-0.5 border-ocean-80 bg-white rounded-lg max-w-max border-2 text-base mobile:text-xl xl:text-3xl font-bold text-ocean-80'>
-              Info
-            </button></p>
-          </div> {/* Placeholder to align with logo */}
-        </div>
-        <div className="flex items-center justify-center w-3-5 mobile:hidden border-b-2 border-ocean-80 pb-4">
-          <div className="relative flex items-center">
-            {/* Search Bar in mobile perspective*/}
-            <FaSearch className="bg-ocean-20 absolute left-3 text-gray-500" />
-            <input
-              type="text"
-              placeholder="Search..."
-              className="bg-ocean-20 pl-10 pr-4 py-1 rounded-full border border-ocean-80 focus:outline-none focus:ring-2 focus:ring-[#0A8276] text-gray-700 w-64 shadow-sm  "
-              value={searchText}
-              onChange={handleSearchChange}
-            />
-          </div>
-        </div>
+      <header>
+        {/* Your header code */}
       </header>
 
       {showModal && <Modal onClose={() => setShowModal(false)} />}
-      {/* Map */}
       <div className="flex-grow z-1">
         <APIProvider apiKey={import.meta.env.VITE_REACT_APP_GOOGLE_MAPS_API_KEY}>
-          <Map defaultCenter={center} defaultZoom={7} mapId="testID">
-            {filteredLocations.map((location) => (
+          <Map defaultCenter={{ lat: 48.790447, lng: 11.497889 }} defaultZoom={7} mapId="testID">
+            {filteredLocations.map((location, index) => (
               <AdvancedMarker
                 key={location.id}
                 position={location.position}
@@ -141,7 +110,12 @@ function App() {
               >
                 <div>
                   <div className="flex flex-col justify-center items-center">
-                    <img src={Person} alt="Profile photo of the person who suggested this place" className="h-16 mobile:h-32 xl:h-48" /> {/* Infineon Logo */}
+                    {/* Display the image dynamically based on the index (starting from 1) */}
+                    <img
+                      src={imagePaths[selectedLocation.id] || imagePaths[1]} // Fallback to '1.jpg' if no matching image
+                      alt={`Image for location ${selectedLocation.id}`}
+                      className="h-16 mobile:h-32 xl:h-48"
+                    />
                     <p className="text-sm text-gray-700 pb-4">
                       Empfohlen von: {highlightText(selectedLocation.user, searchText)}
                     </p>
