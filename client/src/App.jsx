@@ -151,8 +151,8 @@ function App() {
                   <div className="flex flex-col justify-center items-center">
                     {/* Display the image dynamically based on the index (starting from 1) */}
                     <img
-                      src={imagePaths[selectedLocation.id] || imagePaths[0]} // Fallback to '1.jpg' if no matching image
-                      alt={`Image for location ${selectedLocation.id}`}
+                      src={imagePaths[selectedLocation.id + 1] || imagePaths[0]} // Fallback to '1.jpg' if no matching image
+                      alt={`Image for location ${selectedLocation.id + 1}`}
                       className="h-32 xl:h-48"
                     />
                     <p className="text-sm text-gray-700 pb-4">
