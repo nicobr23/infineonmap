@@ -42,17 +42,25 @@ function App() {
 
     // Resolve all image paths (asynchronous)
     const resolveImagePaths = async () => {
-      const paths = {};
-      let counter = 1; // Start the counter at 1 for image names
-
-      for (const path in images) {
-        const module = await images[path](); // Load the image URL dynamically
-        paths[counter] = module.default; // Assign the image URL to the counter
-        counter++; // Increment counter to match the next image
-      }
-      setImagePaths(paths); // Set the resolved image paths
+      const entries = Object.entries(images);
+  
+      // Extract the numerical part and sort
+      const sortedEntries = entries.sort(([pathA], [pathB]) => {
+        const numA = parseInt(pathA.match(/\d+/)[0], 10);
+        const numB = parseInt(pathB.match(/\d+/)[0], 10);
+        return numA - numB;
+      });
+  
+      const paths = await Promise.all(
+        sortedEntries.map(async ([path]) => {
+          const module = await images[path]();
+          return module.default;
+        })
+      );
+  
+      setImagePaths(paths); // Set the resolved image paths in the correct order
     };
-
+  
     resolveImagePaths();
   }, []);
 
@@ -151,8 +159,8 @@ function App() {
                   <div className="flex flex-col justify-center items-center">
                     {/* Display the image dynamically based on the index (starting from 1) */}
                     <img
-                      src={imagePaths[selectedLocation.id + 1] || imagePaths[0]} // Fallback to '1.jpg' if no matching image
-                      alt={`Image for location ${selectedLocation.id + 1}`}
+                      src={imagePaths[selectedLocation.id] || imagePaths[0]} // Fallback to '1.jpg' if no matching image
+                      alt={`Image for location ${selectedLocation.id}`}
                       className="h-32 xl:h-48"
                     />
                     <p className="text-sm text-gray-700 pb-4">
